@@ -62,7 +62,7 @@ if "reset_key" not in st.session_state:
     st.session_state.reset_key = 0
 
 # --- Titel ---
-st.title("🎯 EmojIQ – Das Emoji-Ratespiel")
+st.title("🎯 Emoji master – Das Emoji-Ratespiel")
 st.caption("Errate, was die Emojis bedeuten, und sammle Punkte! 💡")
 
 # --- Themenauswahl ---
