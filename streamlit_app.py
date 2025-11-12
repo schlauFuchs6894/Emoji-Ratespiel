@@ -92,6 +92,7 @@ else:
         user_antwort = antwort.lower().strip()
 
         if user_antwort == richtige_antwort:
+            st.ballons()
             st.session_state.punkte += 1
             st.session_state.feedback = f"✅ Richtig! Es war **{st.session_state.runde['antwort']}** 🎉"
         else:
