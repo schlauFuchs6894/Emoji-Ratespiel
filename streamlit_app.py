@@ -56,8 +56,8 @@ if "runde" not in st.session_state:
     st.session_state.runde = None
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
+if "reset_key" not in st.session_state:
+    st.session_state.reset_key = 0
 
 # --- Titel ---
 st.title("🎯 EmojIQ – Das Emoji-Ratespiel")
@@ -70,6 +70,7 @@ if st.session_state.thema is None:
     if st.button("Start! 🚀"):
         st.session_state.thema = thema
         st.session_state.runde = random.choice(THEMEN[thema])
+        st.session_state.punkte = 0
         st.rerun()
 
 # --- Spiel ---
@@ -78,18 +79,25 @@ else:
     st.write("Errate, was diese Emojis darstellen:")
     st.markdown(f"### {st.session_state.runde['emoji']}")
 
-    antwort = st.text_input("Deine Antwort:", key="user_input")
+    # Das Textfeld bekommt bei jeder Runde einen neuen Key → kein Fehler!
+    antwort = st.text_input(
+        "Deine Antwort:",
+        key=f"user_input_{st.session_state.reset_key}"
+    )
 
     if st.button("Prüfen ✅"):
-        if antwort.strip().lower() == st.session_state.runde["antwort"].lower():
+        richtige_antwort = st.session_state.runde["antwort"].lower().strip()
+        user_antwort = antwort.lower().strip()
+
+        if user_antwort == richtige_antwort:
             st.session_state.punkte += 1
             st.session_state.feedback = f"✅ Richtig! Es war **{st.session_state.runde['antwort']}** 🎉"
         else:
             st.session_state.feedback = f"❌ Falsch! Richtige Antwort: **{st.session_state.runde['antwort']}**"
 
-        # Neue Runde aus gleichem Thema
+        # Neue Runde + neuer Key fürs Eingabefeld (reset)
         st.session_state.runde = random.choice(THEMEN[st.session_state.thema])
-        st.session_state.user_input = ""  # Textfeld leeren
+        st.session_state.reset_key = random.randint(0, 1000000)
         st.rerun()
 
     # --- Feedback & Punkteanzeige ---
@@ -98,6 +106,6 @@ else:
 
     # --- Neustart ---
     if st.button("🔁 Neues Thema wählen"):
-        for key in ["thema", "punkte", "runde", "feedback", "user_input"]:
+        for key in ["thema", "punkte", "runde", "feedback", "reset_key"]:
             st.session_state[key] = None
         st.rerun()
