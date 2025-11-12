@@ -1,6 +1,8 @@
 import streamlit as st
 import random
 
+st.set_page_config(page_title="Emoji-Ratespiel", page_icon="💡")
+
 # --- Spiel-Daten ---
 THEMEN = {
     "Filme": [
