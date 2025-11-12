@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 
-# --- Daten ---
+# --- Spiel-Daten ---
 THEMEN = {
     "Filme": [
         {"emoji": "🧙‍♂️⚡🏰", "antwort": "Harry Potter"},
@@ -12,10 +12,10 @@ THEMEN = {
     ],
     "Bücher": [
         {"emoji": "🐍⚡📖", "antwort": "Harry Potter"},
-        {"emoji": "🐷👦", "antwort": "Schweinsgalopp"},
         {"emoji": "👧🌈🦁", "antwort": "Der Zauberer von Oz"},
         {"emoji": "🐳⚓", "antwort": "Moby Dick"},
         {"emoji": "👻🏠", "antwort": "Spukhaus"},
+        {"emoji": "🧙‍♂️🪄", "antwort": "Der Herr der Ringe"},
     ],
     "Gegenstände": [
         {"emoji": "📱", "antwort": "Handy"},
@@ -24,9 +24,30 @@ THEMEN = {
         {"emoji": "⌚", "antwort": "Uhr"},
         {"emoji": "🎒", "antwort": "Rucksack"},
     ],
+    "Songs": [
+        {"emoji": "🕺🪩", "antwort": "Stayin' Alive"},
+        {"emoji": "👑🕺", "antwort": "King of Pop"},
+        {"emoji": "🎅🎶", "antwort": "Jingle Bells"},
+        {"emoji": "🔥🎤", "antwort": "Firework"},
+        {"emoji": "💔🎵", "antwort": "Someone Like You"},
+    ],
+    "Tiere": [
+        {"emoji": "🦁", "antwort": "Löwe"},
+        {"emoji": "🐘", "antwort": "Elefant"},
+        {"emoji": "🐍", "antwort": "Schlange"},
+        {"emoji": "🐧", "antwort": "Pinguin"},
+        {"emoji": "🐢", "antwort": "Schildkröte"},
+    ],
+    "Länder": [
+        {"emoji": "🗼🍣", "antwort": "Japan"},
+        {"emoji": "🦘🇦🇺", "antwort": "Australien"},
+        {"emoji": "🍕🏛️", "antwort": "Italien"},
+        {"emoji": "🗽🍔", "antwort": "USA"},
+        {"emoji": "🥨🍺", "antwort": "Deutschland"},
+    ],
 }
 
-# --- Initialisierung ---
+# --- Session Setup ---
 if "thema" not in st.session_state:
     st.session_state.thema = None
 if "punkte" not in st.session_state:
@@ -35,14 +56,18 @@ if "runde" not in st.session_state:
     st.session_state.runde = None
 if "feedback" not in st.session_state:
     st.session_state.feedback = ""
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
 
-st.title("🧩 Emoji-Ratespiel")
+# --- Titel ---
+st.title("🎯 EmojIQ – Das Emoji-Ratespiel")
+st.caption("Errate, was die Emojis bedeuten, und sammle Punkte! 💡")
 
 # --- Themenauswahl ---
 if st.session_state.thema is None:
     st.subheader("Wähle ein Thema:")
     thema = st.selectbox("Kategorie:", list(THEMEN.keys()))
-    if st.button("Start!"):
+    if st.button("Start! 🚀"):
         st.session_state.thema = thema
         st.session_state.runde = random.choice(THEMEN[thema])
         st.rerun()
@@ -50,27 +75,29 @@ if st.session_state.thema is None:
 # --- Spiel ---
 else:
     st.subheader(f"Thema: {st.session_state.thema}")
-    st.write("Errate, was diese Emojis bedeuten:")
+    st.write("Errate, was diese Emojis darstellen:")
     st.markdown(f"### {st.session_state.runde['emoji']}")
 
-    antwort = st.text_input("Deine Antwort:", key="antwort")
+    antwort = st.text_input("Deine Antwort:", key="user_input")
 
-    if st.button("Prüfen"):
+    if st.button("Prüfen ✅"):
         if antwort.strip().lower() == st.session_state.runde["antwort"].lower():
             st.session_state.punkte += 1
             st.session_state.feedback = f"✅ Richtig! Es war **{st.session_state.runde['antwort']}** 🎉"
         else:
             st.session_state.feedback = f"❌ Falsch! Richtige Antwort: **{st.session_state.runde['antwort']}**"
 
-        # Neue Runde aus dem gleichen Thema
+        # Neue Runde aus gleichem Thema
         st.session_state.runde = random.choice(THEMEN[st.session_state.thema])
-        st.session_state.antwort = ""
+        st.session_state.user_input = ""  # Textfeld leeren
+        st.rerun()
 
+    # --- Feedback & Punkteanzeige ---
     st.markdown(st.session_state.feedback)
     st.markdown(f"**Punkte:** {st.session_state.punkte}")
 
     # --- Neustart ---
     if st.button("🔁 Neues Thema wählen"):
-        for key in ["thema", "punkte", "runde", "feedback"]:
+        for key in ["thema", "punkte", "runde", "feedback", "user_input"]:
             st.session_state[key] = None
         st.rerun()
